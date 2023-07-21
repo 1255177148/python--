@@ -62,7 +62,6 @@ axes.spines['right'].set_color('none') # 右轴的颜色设置为空
 axes.spines['top'].set_color('none') # 上轴的颜色设置为空
 axes.spines['bottom'].set_position(('data', 0)) # 这里的data指的是纵坐标的值，也就是指将横坐标水平移动到纵坐标值为0的位置
 axes.spines['left'].set_position(('axes', 0.046)) # 这里的axes指的就是坐标轴，也就是指将纵坐标移到横坐标4.6%的位置
-axes
 pylab.xticks(rotation = 50)
 pylab.yticks(range(17))
 pylab.show()
