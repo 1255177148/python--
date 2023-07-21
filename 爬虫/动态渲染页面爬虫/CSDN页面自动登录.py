@@ -21,4 +21,15 @@ driver.switch_to.frame("passport_iframe") # 切换iframe到弹出的登录框
 passwordLogin = driver.find_element(By.XPATH, '//div[@class="login-box-tabs-items"]/span[string()="密码登录"]')
 time.sleep(1)
 # print(passwordLogin.text)
-passwordLogin.click()
+jsClik = 'document.getElementsByClassName("login-box-tabs-items")[0].children[3].click()' # 使用js语言来操作点击事件
+driver.execute_script(jsClik)
+time.sleep(1)
+userName = driver.find_element(By.XPATH, '//input[@class="base-input-text" and @autocomplete="username"]')
+userName.clear()
+userName.send_keys("18556976598")
+password = driver.find_element(By.XPATH, '//input[@class="base-input-text" and @autocomplete="current-password"]')
+password.clear()
+password.send_keys("19941128ya@..")
+time.sleep(1)
+buttonClik = 'document.getElementsByClassName("base-button")[0].click()' # 使用js语言来操作点击事件
+driver.execute_script(buttonClik)
