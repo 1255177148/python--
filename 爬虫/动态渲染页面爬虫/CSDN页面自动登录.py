@@ -34,8 +34,17 @@ time.sleep(1)
 buttonClik = 'document.getElementsByClassName("base-button")[0].click()' # 使用js语言来操作点击事件
 driver.execute_script(buttonClik)
 
+time.sleep(2)
+driver.switch_to.default_content() # 因为上面是切换iframe了，所以这里要返回上一层
 time.sleep(1)
-driver.switch_to.window(driver.window_handles[0])
+message = driver.find_element(By.ID, 'toolbar-remind') # 选中CSDN右上角的消息标签
+ActionChains(driver).move_to_element(message).perform() # 鼠标悬停
 time.sleep(1)
-message = driver.find_element(By.ID, 'toolbar-search-input')
-message.clear()
+# following-sibling是同层向下查找，也就是通过哥哥获取弟弟节点，之类的following-sibling::div[1] 指的是获取第一个弟弟节点
+# privateLetter = driver.find_element(By.XPATH, '//a[@id="toolbar-remind"]/following-sibling::div[1]/a[4]')
+privateLetter = driver.find_element(By.CSS_SELECTOR, '#toolbar-remind+div a:nth-child(4)') # css标签选择器，获取id为toolbar-remind第一个div弟弟节点的第四个a标签子节点
+privateLetter.click()
+time.sleep(2)
+driver.switch_to.frame("private")
+chats = driver.find_element(By.XPATH, '//div[@id="app"]/div/div/div[1]/div/div[2]/div/div[1]/div/div[3]') # XPATH选择器，下标是从1开始的
+chats.click()
