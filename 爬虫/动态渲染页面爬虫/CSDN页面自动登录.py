@@ -33,3 +33,9 @@ password.send_keys("19941128ya@..")
 time.sleep(1)
 buttonClik = 'document.getElementsByClassName("base-button")[0].click()' # 使用js语言来操作点击事件
 driver.execute_script(buttonClik)
+
+time.sleep(1)
+driver.switch_to.window(driver.window_handles[0])
+time.sleep(1)
+message = driver.find_element(By.ID, 'toolbar-search-input')
+message.clear()
