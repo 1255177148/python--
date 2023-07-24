@@ -24,7 +24,7 @@ loginButton.click() # 左键点击
 driver.implicitly_wait(2)# 打开页面后，要先隐式等待2秒，等页面加载出来后，再切换iframe，不然页面还没加载出来，就选择对象，会报错的
 driver.switch_to.frame("passport_iframe") # 切换iframe到弹出的登录框
 # passwordLogin = driver.find_element(By.XPATH, '//div[@class="login-box-tabs-items"]/span[string()="密码登录"]')
-driver.implicitly_wait(2)
+driver.implicitly_wait(2) # 隐式等待2秒，这里是等当前页面全部刷新完之后，再执行下面的代码
 # print(passwordLogin.text)
 jsClik = 'document.getElementsByClassName("login-box-tabs-items")[0].children[3].click()' # 使用js语言来操作点击事件
 driver.execute_script(jsClik)
