@@ -8,7 +8,7 @@ headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 }
 
-res = requests.get('http://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice?name=ssq&issueCount=&issueStart=&issueEnd=&dayStart=&dayEnd=&pageNo=1&pageSize=100&week=&systemType=PC', headers=headers)
+res = requests.get('http://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice?name=ssq&issueCount=&issueStart=&issueEnd=&dayStart=&dayEnd=&pageNo=1&pageSize=500&week=&systemType=PC', headers=headers)
 # 通过发送请求成功res，通过(apparent_encoding)获取该网页的编码格式，并对res解码
 res.encoding = res.apparent_encoding
 # print(res.text)
@@ -22,6 +22,7 @@ num4 = list()  # 双色球第四位
 num5 = list()  # 双色球第五位
 num6 = list()  # 双色球第六位
 num7 = list()  # 双色球第七位
+i = 1
 for data in resultList:
     # print(data)
     # map = ast.literal_eval(data)
@@ -31,12 +32,13 @@ for data in resultList:
     code = list(num.split(","))
     dateStr = data["date"]
     index = 0
-    for i, eachChar in enumerate(dateStr):
-        if "(" == eachChar:
-            index = i
-            break
+    # for i, eachChar in enumerate(dateStr):
+    #     if "(" == eachChar:
+    #         index = i
+    #         break
     # print(dateStr[0:index])
-    x.append(dateStr[0:index])
+    x.append(i)
+    i+=1
     num1.append(int(code[0]))
     num2.append(int(code[1]))
     num3.append(int(code[2]))
@@ -61,7 +63,7 @@ axes = pylab.gca() # 获取当前的坐标轴
 axes.spines['right'].set_color('none') # 右轴的颜色设置为空
 axes.spines['top'].set_color('none') # 上轴的颜色设置为空
 axes.spines['bottom'].set_position(('data', 0)) # 这里的data指的是纵坐标的值，也就是指将横坐标水平移动到纵坐标值为0的位置
-axes.spines['left'].set_position(('axes', 0.046)) # 这里的axes指的就是坐标轴，也就是指将纵坐标移到横坐标4.6%的位置
+axes.spines['left'].set_position(('axes', 0.044)) # 这里的axes指的就是坐标轴，也就是指将纵坐标移到横坐标4.6%的位置
 pylab.xticks(rotation = 50)
 pylab.yticks(range(17))
 pylab.show()
