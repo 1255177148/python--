@@ -5,14 +5,28 @@ from selenium.webdriver.support.ui import WebDriverWait # 显式等待用
 from selenium.webdriver.support import expected_conditions as EC # 显式等待用
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-import time
+import os
 
 binary_path=(r'C://Program Files//Mozilla Firefox//firefox.exe')  #binary_path就是你的游览器路径
 ops=Options()
 ops.binary_location=binary_path
+ops.set_preference("dom.webdriver.enabled", False);
 
 driver = webdriver.Firefox(options=ops)
 driver.get("https://www.csdn.net/")
+# '''
+# 这里要隐藏特征,不然会被检测到是爬虫访问的,这个操作只能是chrome浏览器才能用
+# 可以用一个js文件来隐藏,首先本地要先安装node.js,
+# 然后在指定目录中cmd打开控制台,然后输入npx extract-stealth-evasions,等待片刻后,就会发现有个stealth.min.js文件下载下来了,
+# 这个就是用来隐藏特征的
+# '''
+# print("当前的目录是:" + os.getcwd()) #看下当前工作目录，不然下面的open函数打开相对路径会有问题，这里找到正确的路径
+# with open('stealth.min.js') as file:
+#     js = file.read()
+# driver.execute(
+#     cmd_args={'source': js},
+#     cmd="Page.addScriptToEvaluateOnNewDocument",
+# )
 messagePrompt = '超时了!'
 '''
 WebDriverWait是显式等待,这里是等待2秒,每0.5秒获取一次,直到获取到指定的元素为止,如果超过2秒还没获取到,则报【超时了!】提示,
@@ -24,7 +38,7 @@ loginButton.click() # 左键点击
 driver.implicitly_wait(2)# 打开页面后，要先隐式等待2秒，等页面加载出来后，再切换iframe，不然页面还没加载出来，就选择对象，会报错的
 driver.switch_to.frame("passport_iframe") # 切换iframe到弹出的登录框
 # passwordLogin = driver.find_element(By.XPATH, '//div[@class="login-box-tabs-items"]/span[string()="密码登录"]')
-driver.implicitly_wait(2) # 隐式等待2秒，这里是等当前页面全部刷新完之后，再执行下面的代码
+driver.implicitly_wait(5) # 隐式等待2秒，这里是等当前页面全部刷新完之后，再执行下面的代码
 # print(passwordLogin.text)
 jsClik = 'document.getElementsByClassName("login-box-tabs-items")[0].children[3].click()' # 使用js语言来操作点击事件
 driver.execute_script(jsClik)
@@ -41,7 +55,7 @@ driver.execute_script(buttonClik)
 
 driver.implicitly_wait(2)
 driver.switch_to.default_content() # 因为上面是切换iframe了，所以这里要返回上一层
-message = WebDriverWait(driver, 2, 0.5).until(EC.presence_of_element_located((By.ID, 'toolbar-remind')), message=messagePrompt)# 选中CSDN右上角的消息标签
+message = WebDriverWait(driver, 5, 0.5).until(EC.presence_of_element_located((By.ID, 'toolbar-remind')), message=messagePrompt)# 选中CSDN右上角的消息标签
 # message = driver.find_element(By.ID, 'toolbar-remind') # 选中CSDN右上角的消息标签
 ActionChains(driver).move_to_element(message).perform() # 鼠标悬停
 driver.implicitly_wait(1)
