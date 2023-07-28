@@ -59,7 +59,7 @@ message = WebDriverWait(driver, 5, 0.5).until(EC.presence_of_element_located((By
 # message = driver.find_element(By.ID, 'toolbar-remind') # 选中CSDN右上角的消息标签
 ActionChains(driver).move_to_element(message).perform() # 鼠标悬停
 driver.implicitly_wait(1)
-# following-sibling是同层向下查找，也就是通过哥哥获取弟弟节点，之类的following-sibling::div[1] 指的是获取第一个弟弟节点
+# following-sibling是同层向下查找，也就是通过哥哥获取弟弟节点，之类的following-sibling::div[1] 指的是获取所有弟弟节点中第一个div标签
 # privateLetter = driver.find_element(By.XPATH, '//a[@id="toolbar-remind"]/following-sibling::div[1]/a[4]')
 # privateLetter = driver.find_element(By.CSS_SELECTOR, '#toolbar-remind+div a:nth-child(4)') # css标签选择器，获取id为toolbar-remind第一个div弟弟节点的第四个a标签子节点
 # css标签选择器，获取id为toolbar-remind第一个div弟弟节点的第四个a标签子节点
