@@ -8,7 +8,7 @@ headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 }
 
-res = requests.get('http://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice?name=ssq&issueCount=&issueStart=&issueEnd=&dayStart=&dayEnd=&pageNo=1&pageSize=500&week=&systemType=PC', headers=headers)
+res = requests.get('http://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice?name=ssq&issueCount=&issueStart=&issueEnd=&dayStart=&dayEnd=&pageNo=1&pageSize=10&week=&systemType=PC', headers=headers)
 # 通过发送请求成功res，通过(apparent_encoding)获取该网页的编码格式，并对res解码
 res.encoding = res.apparent_encoding
 # print(res.text)
