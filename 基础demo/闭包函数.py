@@ -33,3 +33,22 @@ def sendNum(a):
 
 out = outer1(sendNum)
 out(200)
+
+# 多个装饰器
+# 离被装饰函数最新的装饰器先运行，然后再运行外面的，依次装饰
+def fun1(fn):
+    def inner():
+        return '装饰器一[' + fn() + '在这里]\n'
+    return inner
+
+def fun2(fn):
+    def inner():
+        return '装饰器二[' + fn() + '在此]\n'
+    return inner
+
+@fun1
+@fun2
+def showFun():
+    return '老孙'
+
+print(showFun())
