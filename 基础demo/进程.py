@@ -1,6 +1,7 @@
 # 一个正在运行的程序或者软件就是一个进程
 # 程序跑起来就成了进程
 # 一个进程里可以有多个线程
+# 注意，进程间不共享全局变量
 
 # 进程的状态
 # 1、就绪状态：运行的条件都已经满足，正在等待CPU执行
@@ -22,17 +23,22 @@
 # 2、pid:当前进程的进程编号
 
 from multiprocessing import Process
+import os
 
-def sing():
-    print('唱歌')
+def sing(name, person):
+    print('唱歌进程的编号:', os.getpid())
+    print('唱歌父进程的编号:', os.getppid())
+    print(f'{name}在唱歌唱歌, {person}也在唱歌')
 
-def dance():
-    print('跳舞')
+def dance(name, person):
+    print('跳舞进程的编号:', os.getpid())
+    print('跳舞父进程的编号:', os.getppid())
+    print(f'{name}在跳舞,{person}也在跳舞')
 
 if __name__ == '__main__':
     # 创建子进程
-    p1 = Process(target=sing, name='子进程1')
-    p2 = Process(target=dance, name='子进程2')
+    p1 = Process(target=sing, name='子进程1', args=('小白', '小明'))
+    p2 = Process(target=dance, name='子进程2', kwargs={'name':'小红', 'person': '小兰'})
     p1.start()
     p2.start()
     # 访问子进程名称
@@ -41,3 +47,5 @@ if __name__ == '__main__':
     # 获取子进程的进程编号
     print('p1子进程编号：', p1.pid)
     print('p2子进程编号：', p2.pid)
+    # 主进程的进程编号
+    print('主进程编号：', os.getpid())
