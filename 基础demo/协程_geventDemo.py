@@ -28,3 +28,17 @@ import gevent
 # 上面是最简单的模拟IO延时的小demo，下面写一个更实际点的应用场景示例，上面先都注释掉
 from gevent import monkey
 monkey.patch_all() # 这里使用了monkey
+import requests
+
+def runTask(url):
+    print(f'正在访问--->{url}')
+    try:
+        response = requests.get(url)
+        print(f'{url}请求返回的数据长度是{len(response.text)}')
+    except Exception as e:
+        print('请求报错')
+
+if __name__ == '__main__':
+    urls = ['https://www.csdn.net', 'https://www.baidu.com', 'https://www.hao123.com']
+    gevent.joinall([gevent.spawn(runTask, url) for url in urls])
+    # 上面的示例中，会看到控制台的打印中，会先出现访问三个url的输出，然后才是请求返回的输出
