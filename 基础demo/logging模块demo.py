@@ -35,7 +35,7 @@ def log_init():
     handler.setFormatter(format)
     logger.addHandler(handler)
 
-    console = logging.StreamHandler()
+    console = logging.StreamHandler() #控制台日志打印处理类
     console.setLevel(log_level)
     console.setFormatter(format)
     logger.addHandler(console)
