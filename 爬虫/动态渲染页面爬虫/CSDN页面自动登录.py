@@ -50,6 +50,9 @@ password = driver.find_element(By.XPATH, '//input[@class="base-input-text" and @
 password.clear()
 password.send_keys("19941128ya@..")
 driver.implicitly_wait(1)
+checkboxClick = 'document.getElementsByClassName("inform-title")[0].click()'
+driver.execute_script(checkboxClick)
+driver.implicitly_wait(1)
 buttonClik = 'document.getElementsByClassName("base-button")[0].click()' # 使用js语言来操作点击事件
 driver.execute_script(buttonClik)
 
