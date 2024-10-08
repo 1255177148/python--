@@ -42,3 +42,4 @@ if __name__ == '__main__':
     print(proxyg.send(10))
     print(proxyg.send(15))
     print(proxyg.send(20))
+    print(proxyg.send(None))
