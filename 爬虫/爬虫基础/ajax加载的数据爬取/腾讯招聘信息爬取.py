@@ -5,6 +5,8 @@ monkey.patch_all()  # 这里使用了monkey
 import requests
 import time
 import math
+from openpyxl import Workbook
+import copy
 
 
 class TencentRecruit:
@@ -53,7 +55,7 @@ class TencentRecruit:
         list = []
         data = self.sendPageRequest(params)
         if data["Posts"]:
-            list.append(data["Posts"])
+            list.extend(data["Posts"])
         # 获取分页总条数
         pageCount = int(data["Count"])
         # 获取单页容量
@@ -66,19 +68,34 @@ class TencentRecruit:
         for i in range(2, pageTotalNum + 1):
             params["timestamp"] = int(time.time() * 1000)
             params["pageIndex"] = i
-            job_object = gevent.spawn(self.sendPageRequest, params)
-            job_list.append(job_object)
+            job_list.append(gevent.spawn(self.sendPageRequest, copy.deepcopy(params))) # 这里使用gevent协程,注意，这里的params要用深拷贝，不然下一个循环改了值之后，会影响循环里的其他的请求参数
         gevent.joinall(job_list)
-        result_list = [job_object.value for job_object in job_list]
+        result_list = [job_object.value for job_object in job_list] # 这里for循环依次获取协程执行的函数返回的结果
         for data in result_list:
             if data["Posts"]:
-                list.append(data["Posts"])
+                list.extend(data["Posts"])
         return list
 
     def sendPageRequest(self, params):
         res = requests.get(url=self.recruitUrl, headers=self.headers, params=params)
         data = res.json()["Data"]
         return data
+    
+    def exportData(self, data):
+        '''
+        导出数据到excel表里
+        '''
+        title_list = ['职位名称','工作地点','所属事业群','职业类别','需要工作年限','职位最后更新时间','工作职责'] # 表头
+        list = []
+        list.append(title_list)
+        for item in data:
+            list.append([item['RecruitPostName'], item['LocationName'], item['BGName'], item['CategoryName'], item['RequireWorkYearsName'], item['LastUpdateTime'], item['Responsibility']])
+        workbook = Workbook()
+        sheet = workbook.active # 激活sheet，一般默认的第一个sheet是使用workbook.active激活并创建，后续如果想创建并写入多个sheet，则后面可以用wb.create_sheet(title="表头名")来创建sheet
+        sheet.title = '腾讯招聘信息'
+        for i in list:
+            sheet.append(i)
+        workbook.save('腾讯招聘信息.xlsx')
 
 
 if __name__ == "__main__":
@@ -105,4 +122,4 @@ if __name__ == "__main__":
         "area": "cn",
     }
     dataList = tencentRecruit.getPageData(params=params)
-    print(dataList)
+    tencentRecruit.exportData(dataList)
