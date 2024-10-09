@@ -1,7 +1,7 @@
 li = ['one', 'two', 'three']
 li.append('four')
 print(li)
-li.extend('five')
+li.extend(['five', 'six']) # 向列表追加一个新列表，也就是将另一个列表的所有元素分别加到原有列表里
 print(li)
 
 for item in li:
