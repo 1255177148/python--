@@ -1,0 +1,22 @@
+{
+    "uid": 10818,
+    "title": "这是一个标题",
+    "photo": "https://static-image.xfz.cn/1700020048_905.png",
+    "author": {
+        "photo": "https://static-image.xfz.cn/1552965465_492.jpg",
+        "authors": [
+            {
+                "author_id": 500,
+                "name": "这是一个作者"
+            }
+        ]
+    },
+    "is_original": false,
+    "article_type": "热点",
+    "intro": "这是一段描述",
+    "source": "",
+    "time": "2024-10-09 22:45:12",
+    "keywords": [
+        "动脉网"
+    ]
+}

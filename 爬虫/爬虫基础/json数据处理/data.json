@@ -1,0 +1,12 @@
+{
+    "name": "张三",
+    "age": 18,
+    "skill": [
+        "python",
+        "java",
+        "vue"
+    ],
+    "isDelete": false,
+    "isActive": true,
+    "addr": null
+}
