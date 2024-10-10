@@ -43,15 +43,9 @@ class PullVedio:
             # 获取视频信息
             video_url = jsonpath(json_o, "$.result.video_info.dash.video[0].base_url")
             video_size = jsonpath(json_o, "$.result.video_info.dash.video[0].size")
-            video_max_range = jsonpath(
-                json_o, "$.result.video_info.dash.video[0].SegmentBase.indexRange"
-            )
             # 获取音频信息
             audio_url = jsonpath(json_o, "$.result.video_info.dash.audio[0].base_url")
             audio_size = jsonpath(json_o, "$.result.video_info.dash.audio[0].size")
-            audio_max_range = jsonpath(
-                json_o, "$.result.video_info.dash.audio[0].SegmentBase.indexRange"
-            )
             # 组装返回
             json_map["videoUrl"] = video_url[0]
             json_map["videoSize"] = video_size[0]
@@ -84,7 +78,7 @@ class PullVedio:
         """
         # 获取视频长度
         video_content = json_map["videoSize"]  # 视频总长度
-        video_length = json_map["videoRange"]  # 每次请求最大的视频长度
+        video_length = json_map["videoRange"]  # 初次请求最大的视频长度
         url = json_map["videoUrl"]
         # 分段下载视频
         self.handleRequest(url, video_file, video_content, video_length)
@@ -97,7 +91,7 @@ class PullVedio:
         :param str audio_file: 下载到本地的文件路径
         """
         audio_size = json_map["audioSize"]  # 音频信息大小
-        audio_length = json_map["audioRange"]  # 每次请求最大的音频长度
+        audio_length = json_map["audioRange"]  # 初次请求最大的音频长度
         url = json_map["audioUrl"]
         # 分段下载
         self.handleRequest(url, audio_file, audio_size, audio_length)
@@ -110,39 +104,35 @@ class PullVedio:
             url (_str_): 请求地址
             file (_str_): 将获取到的数据写入指定文件里
             size (_int_): 音视频数据大小
-            range (_int_): 分段下载每次获取到的数据最大容量
+            range (_int_): 分段下载初始数据最大容量
         """
-        job_list = []
         start_length = 0
         end_length = int(range)
-        if size is None:
-            # 这时没有得到视频大小信息，先分段请求一次，拿到响应头里的视频大小信息
-            header = copy.deepcopy(self.headers)
-            header["Range"] = "bytes=" + str(start_length) + "-" + str(end_length)
-            res = requests.get(url=url, headers=header)
-            content_range = res.headers['Content-Range'].split('/')[1]
-            size = content_range
+        # 这时没有得到视频大小信息，先分段请求一次，拿到响应头里的视频大小信息
+        header = copy.deepcopy(self.headers)
+        header["Range"] = "bytes=" + str(start_length) + "-" + str(end_length)
+        res = requests.get(url=url, headers=header)
+        content_range = res.headers['Content-Range'].split('/')[1]
+        size = content_range
+        content_length = 5242880
+        end_length = content_length if int(size) > content_length else int(size)
+        print(f'{file}的总大小为{size}')
         while True:
             header = copy.deepcopy(self.headers)
             header["Range"] = "bytes=" + str(start_length) + "-" + str(end_length)
-            job_list.append(gevent.spawn(self.sendVedioRequest, header, url))
+            self.sendVedioRequestAndSaveFile(header, url, file, start_length)
+            # job_list.append(gevent.spawn(self.sendVedioRequestAndSaveFile, header, url, file, start_length))
             start_length = end_length + 1
-            end_length = end_length + int(range) - 1
+            end_length = end_length + int(content_length) - 1
             if start_length > int(size):
                 break
             if end_length > int(size):
                 end_length = int(size)
-        gevent.joinall(job_list)
-        result_list = [
-            job_object.value for job_object in job_list
-        ]  # 这里for循环依次获取协程执行的函数返回的结果
-        with open(file, "ab") as f:
-            for data in result_list:
-                f.write(data)
+        # gevent.joinall(job_list)
 
-    def sendVedioRequest(self, header, url):
+    def sendVedioRequestAndSaveFile(self, header, url, file, start_length):
         """
-        This function sends a video request with the provided header and URL.
+        发送单段视频请求，并将返回数据写入文件中
 
         :param dict header: The `header` parameter in the `sendVedioRequest` function is typically used to
         pass any necessary headers for the HTTP request. Headers can include information such as authentication tokens,
@@ -151,9 +141,13 @@ class PullVedio:
 
         :param str url: The `url` parameter in the `sendVedioRequest` function is the URL of the video that
         you want to request. This URL will be used to access and retrieve the video content
+        
+        :param str file: 要写入的文件路径
         """
+        print(f'正在处理{file}的第{start_length}开头的数据')
         res = requests.get(url=url, headers=header)
-        return res.content
+        with open(file, "ab") as f:
+            f.write(res.content)
 
     def mergeVideo(self, videoFile, audioFile, mergeFile):
         """
@@ -167,8 +161,8 @@ class PullVedio:
         ffmpeg_tools.ffmpeg_merge_video_audio(videoFile, audioFile, mergeFile)
 
 if __name__ == '__main__':
-    html_url = 'https://www.bilibili.com/video/BV1me2TYdEMG/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click&vd_source=f6a24697d164c409037b4a81d02627ca'
-    cookie = "buvid3=6CB1F980-6BAD-0ACF-32B7-C34B32A9604873484infoc; b_nut=1713767873; _uuid=22A81BA2-CBCC-F42B-ECBC-F104A632AC810E76458infoc; buvid_fp=a2f8defe23c38461ac49acbd377e11f7; b-user-id=90f43d8a-d64b-49d8-3ead-3a8b842a8beb; rpdid=|(umkY)RRluY0J'u~kRuumYuu; header_theme_version=CLOSE; enable_web_push=DISABLE; bmg_af_switch=1; bmg_src_def_domain=i1.hdslb.com; SESSDATA=ca608579%2C1744087073%2C35b0e%2Aa1CjCmfqRZeLW8ifKEM40aBJ6BCe7C0IwxP3y5NrMQb_bqvRquJjUVZAhGajoc6D3F34oSVjVmaGdVSWpDYnhsZDV0Nm1VOFlpVEx1c1NQSW1wWENuSTAyUUJQUkRSYnZlTU1kV0s3eXFQV0xaRjQ0ZnBUV0Nia245d0g4dUlhNlZ4NGV6bXNHQmhRIIEC; bili_jct=f0db4bceb51296eac442ae0c42d1a86c; DedeUserID=300238501; DedeUserID__ckMd5=59391fe1737bdf1b; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg3OTQzMDIsImlhdCI6MTcyODUzNTA0MiwicGx0IjotMX0.mQvSYGOO6FAZRSDT0_eMpFKHvCBV9g-hEwiZHAE1szo; bili_ticket_expires=1728794242; CURRENT_BLACKGAP=0; sid=8go36z7c; CURRENT_FNVAL=4048; VIP_DEFINITION_GUIDE=1; VIP_CONTENT_REMIND=1; buvid4=45559623-15FA-5144-E915-60245B7D03E374897-024042206-lTDs%2BIBTVnhWBxWWPupc1g%3D%3D; home_feed_column=4; browser_resolution=1159-150; bp_t_offset_300238501=986550805320433664; b_lsid=225EC2B8_19275102CBD"
+    html_url = 'https://www.bilibili.com/video/BV1me2TYdEMG/?p=1&vd_source=f6a24697d164c409037b4a81d02627ca'
+    cookie = "LIVE_BUVID=AUTO9116012151887565; i-wanna-go-back=-1; FEED_LIVE_VERSION=V8; PVID=1; buvid3=B03083CC-64A8-8C2F-10B0-DD76CA9F6B2F76834infoc; b_nut=1710308276; b_ut=7; _uuid=AE10A44BA-15F1-945B-10276-F9D1F5635271052671infoc; home_feed_column=5; iflogin_when_web_push=0; header_theme_version=CLOSE; rpdid=0zbfVHgY7T|A5GuC2o6|3nd|3w1RMtqc; browser_resolution=1440-799; buvid4=F7BCADEA-5F3B-3F03-4AC3-EE454EC7EE5659254-024092014-aWG5Es%2BTkIkuubTYuTo%2Bug%3D%3D; DedeUserID=300238501; DedeUserID__ckMd5=59391fe1737bdf1b; enable_web_push=DISABLE; SESSDATA=33f0f93f%2C1744038530%2Ca161e%2Aa1CjDz6U2omTg5Sal2RojLLn1cj_LtqUrc1dS7RpudyYHqdY9q3cXcTb_76Dkd8dps14MSVkttMEo1YjhlaGZzek50WXpLU2ZwcXlvTmhJZ2g4OExlQWxRQklMYzNzbkI2NjhZY0RQSmd2anZnZHpneC1zZXh4LUtWdnBqTVE3dHRvMUw2RElNYUVRIIEC; bili_jct=b1b2a69735253f6287ddeb8483adea4c; fingerprint=b7b784dd8b6fd7143cf3d562ab7a1526; buvid_fp_plain=undefined; buvid_fp=b7b784dd8b6fd7143cf3d562ab7a1526; b_lsid=8CDEB1C1_19276BDF1BA; CURRENT_BLACKGAP=0; sid=65mcjum9; CURRENT_FNVAL=4048; CURRENT_QUALITY=120; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg4MjkzNzgsImlhdCI6MTcyODU3MDExOCwicGx0IjotMX0.urYgYqWMBM8Q1L-P9CahjcUqR3_vWUGt02Qy_0fMCsI; bili_ticket_expires=1728829318; bp_t_offset_300238501=986690799779446784; bsource=search_bing"
     pullVedio = PullVedio(html_url, cookie)
     json_map = pullVedio.getVedioInfo()
     video_file = 'pullVedio.mp4'
@@ -177,4 +171,4 @@ if __name__ == '__main__':
     video_job = gevent.spawn(pullVedio.downVedio, json_map, video_file)
     audio_job = gevent.spawn(pullVedio.downAudio, json_map, audio_file)
     gevent.joinall([video_job, audio_job])
-    pullVedio.mergeVideo(video_file, audio_job, merge_file)
+    pullVedio.mergeVideo(video_file, audio_file, merge_file)
