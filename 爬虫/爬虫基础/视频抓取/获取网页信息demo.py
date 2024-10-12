@@ -4,36 +4,35 @@ import re
 import json
 from jsonpath import jsonpath
 
-html_url = 'https://www.bilibili.com/video/BV1me2TYdEMG/?p=1&vd_source=f6a24697d164c409037b4a81d02627ca'
-cookie = "LIVE_BUVID=AUTO9116012151887565; i-wanna-go-back=-1; FEED_LIVE_VERSION=V8; PVID=1; buvid3=B03083CC-64A8-8C2F-10B0-DD76CA9F6B2F76834infoc; b_nut=1710308276; b_ut=7; _uuid=AE10A44BA-15F1-945B-10276-F9D1F5635271052671infoc; home_feed_column=5; iflogin_when_web_push=0; header_theme_version=CLOSE; rpdid=0zbfVHgY7T|A5GuC2o6|3nd|3w1RMtqc; browser_resolution=1440-799; buvid4=F7BCADEA-5F3B-3F03-4AC3-EE454EC7EE5659254-024092014-aWG5Es%2BTkIkuubTYuTo%2Bug%3D%3D; DedeUserID=300238501; DedeUserID__ckMd5=59391fe1737bdf1b; enable_web_push=DISABLE; SESSDATA=33f0f93f%2C1744038530%2Ca161e%2Aa1CjDz6U2omTg5Sal2RojLLn1cj_LtqUrc1dS7RpudyYHqdY9q3cXcTb_76Dkd8dps14MSVkttMEo1YjhlaGZzek50WXpLU2ZwcXlvTmhJZ2g4OExlQWxRQklMYzNzbkI2NjhZY0RQSmd2anZnZHpneC1zZXh4LUtWdnBqTVE3dHRvMUw2RElNYUVRIIEC; bili_jct=b1b2a69735253f6287ddeb8483adea4c; fingerprint=b7b784dd8b6fd7143cf3d562ab7a1526; buvid_fp_plain=undefined; buvid_fp=b7b784dd8b6fd7143cf3d562ab7a1526; b_lsid=8CDEB1C1_19276BDF1BA; CURRENT_BLACKGAP=0; sid=65mcjum9; CURRENT_FNVAL=4048; CURRENT_QUALITY=120; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg4MjkzNzgsImlhdCI6MTcyODU3MDExOCwicGx0IjotMX0.urYgYqWMBM8Q1L-P9CahjcUqR3_vWUGt02Qy_0fMCsI; bili_ticket_expires=1728829318; bp_t_offset_300238501=986690799779446784; bsource=search_bing"
-            
+html_url = 'https://www.bilibili.com/video/BV1mG2QYUE9c/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click&vd_source=f6a24697d164c409037b4a81d02627ca'
+cookie = "buvid3=6CB1F980-6BAD-0ACF-32B7-C34B32A9604873484infoc; b_nut=1713767873; _uuid=22A81BA2-CBCC-F42B-ECBC-F104A632AC810E76458infoc; buvid_fp=a2f8defe23c38461ac49acbd377e11f7; b-user-id=90f43d8a-d64b-49d8-3ead-3a8b842a8beb; rpdid=|(umkY)RRluY0J'u~kRuumYuu; header_theme_version=CLOSE; enable_web_push=DISABLE; SESSDATA=ca608579%2C1744087073%2C35b0e%2Aa1CjCmfqRZeLW8ifKEM40aBJ6BCe7C0IwxP3y5NrMQb_bqvRquJjUVZAhGajoc6D3F34oSVjVmaGdVSWpDYnhsZDV0Nm1VOFlpVEx1c1NQSW1wWENuSTAyUUJQUkRSYnZlTU1kV0s3eXFQV0xaRjQ0ZnBUV0Nia245d0g4dUlhNlZ4NGV6bXNHQmhRIIEC; bili_jct=f0db4bceb51296eac442ae0c42d1a86c; DedeUserID=300238501; DedeUserID__ckMd5=59391fe1737bdf1b; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg3OTQzMDIsImlhdCI6MTcyODUzNTA0MiwicGx0IjotMX0.mQvSYGOO6FAZRSDT0_eMpFKHvCBV9g-hEwiZHAE1szo; bili_ticket_expires=1728794242; CURRENT_BLACKGAP=0; VIP_DEFINITION_GUIDE=1; buvid4=45559623-15FA-5144-E915-60245B7D03E374897-024042206-lTDs%2BIBTVnhWBxWWPupc1g%3D%3D; CURRENT_FNVAL=4048; b_lsid=59EA591C_1927F9ECE69; bmg_af_switch=1; bmg_src_def_domain=i1.hdslb.com; home_feed_column=4; bp_t_offset_300238501=987325222283640832; browser_resolution=825-309; sid=65j81fm9"          
 headers = {
         'Referer':'https://www.bilibili.com/',
         "Cookie": cookie,
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
     }
 res = requests.get(url=html_url, headers=headers)
-html = etree.HTML(res.content.decode())
-source_data = html.xpath('/html/head/script[4]/text()')
-print(source_data[0])
-# json_source = re.search(r'__playinfo__=(.*?)</script><script>', source_data[0]).group()
-# print(json_source)
-json_data = re.sub('window.__playinfo__=','', source_data[0], 1)
-with open('data.json', 'w', encoding='utf-8') as f:
-    f.write(json_data)
-json_o = json.loads(json_data)
-video_url = jsonpath(json_o, '$.data.dash.video[0].base_url')
-print(video_url)
-# video_size = jsonpath(json_o, '$.result.video_info.dash.video[0].size')
-# print(video_size)
-video_max_range = jsonpath(json_o, '$.data.dash.video[0].SegmentBase.indexRange')
-print(video_max_range)
-
-audio_url = jsonpath(json_o, '$.data.dash.audio[0].base_url')
-print(audio_url)
-# audio_size = jsonpath(json_o, '$.result.video_info.dash.audio[0].size')
-# print(audio_size)
-audio_max_range = jsonpath(json_o, '$.data.dash.audio[0].SegmentBase.indexRange')
-print(audio_max_range)
 with open('获取到的b站页面数据.html', 'w', encoding='utf-8') as f:
     f.write(res.content.decode())
+# html = etree.HTML(res.content.decode())
+# source_data = html.xpath('/html/head/script[4]/text()')
+# print(source_data[0])
+# # json_source = re.search(r'__playinfo__=(.*?)</script><script>', source_data[0]).group()
+# # print(json_source)
+# json_data = re.sub('window.__playinfo__=','', source_data[0], 1)
+# with open('data.json', 'w', encoding='utf-8') as f:
+#     f.write(json_data)
+# json_o = json.loads(json_data)
+# video_url = jsonpath(json_o, '$.data.dash.video[0].base_url')
+# print(video_url)
+# # video_size = jsonpath(json_o, '$.result.video_info.dash.video[0].size')
+# # print(video_size)
+# video_max_range = jsonpath(json_o, '$.data.dash.video[0].SegmentBase.indexRange')
+# print(video_max_range)
+
+# audio_url = jsonpath(json_o, '$.data.dash.audio[0].base_url')
+# print(audio_url)
+# # audio_size = jsonpath(json_o, '$.result.video_info.dash.audio[0].size')
+# # print(audio_size)
+# audio_max_range = jsonpath(json_o, '$.data.dash.audio[0].SegmentBase.indexRange')
+# print(audio_max_range)
