@@ -9,3 +9,6 @@ print(type(deco))
 str = 'abcabc'
 print(str.find('a'))
 print(str.find('a', -1))
+
+b = '哈哈'
+print(len(b))
