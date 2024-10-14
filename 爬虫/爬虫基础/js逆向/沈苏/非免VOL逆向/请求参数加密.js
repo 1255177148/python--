@@ -1,3 +1,4 @@
+// 这里是在XHR提取断点之后，在右侧窗口的调用堆栈里找到axios请求，然后获取到加密函数
 const CryptoJS = require("crypto-js");
 
 var u = "9mckdlpe$gg#$GJH"
