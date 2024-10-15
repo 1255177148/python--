@@ -55,9 +55,9 @@ n._ff = function (t, e, A, n, r, i, o) {
     n._ii = function (t, e, A, n, r, i, o) {
         return ((o = t + (A ^ (e | ~n)) + (r >>> 0) + o) << i | o >>> 32 - i) + e
     }
-    function rotl(t, e) {
-        return t << e | t >>> 32 - e
-    }
+function rotl(t, e) {
+    return t << e | t >>> 32 - e
+}
 function endian(t) {
     if (t.constructor == Number)
         return 16711935 & rotl(t, 8) | 4278255360 & rotl(t, 24);
@@ -160,7 +160,7 @@ function n(t, e) {
 function bytesToHex(t) {
     for (var e = [], A = 0; A < t.length; A++)
         e.push((t[A] >>> 4).toString(16)),
-        e.push((15 & t[A]).toString(16));
+            e.push((15 & t[A]).toString(16));
     return e.join("")
 }
 function a(t, e) {
