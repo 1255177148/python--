@@ -13,6 +13,7 @@ with open("data.json", "r", encoding="utf-8") as f:
 py_data2 = json.load(open('data.json', 'r', encoding='utf-8'))
 print(py_data2)
 
+
 # 下面是将python数据格式转换为json格式
 # 方法一，使用json.dumps()方法
 data2 = {
