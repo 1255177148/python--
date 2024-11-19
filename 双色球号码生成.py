@@ -5,7 +5,7 @@ num = list()
 
 for item in range(6):
     randomInt = random.randint(1, 33)
-    while (randomInt in num):
+    while randomInt in num:
         randomInt = random.randint(1, 33)
     num.append(randomInt)
 num.sort()
